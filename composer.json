@@ -1,6 +1,7 @@
 {
   "name": "thezenmonkey/foundational",
   "description": "A module for developing SilverStripe sites based on Zurb Foundation",
+  "type": "silverstripe-vendormodule",
   "homepage": "https://github.com/thezenmonkey/foundational/",
   "keywords": ["silverstripe", "foundation", "elemental"],
   "license": "BSD-3-Clause",
