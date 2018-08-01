@@ -15,7 +15,8 @@
     "silverstripe/cms": "^4",
     "silverstripe/framework": "^4",
     "dnadesign/silverstripe-elemental": "^3",
-    "dnadesign/silverstripe-elemental-list": "^1.0"
+    "dnadesign/silverstripe-elemental-list": "^1.0",
+    "unclecheese/display-logic" : "dev-master"
   },
   "autoload": {
     "psr-4": {
