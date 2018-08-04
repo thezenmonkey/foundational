@@ -5,13 +5,18 @@ Name: foundational
 DNADesign\Elemental\Models\BaseElement:
   extensions:
     - thezenmonkey\foundational\Extensions\FoundationalBaseElement
-  UseXLarge: false
-  UseXXLarge: false
-  GridDirections:
-    'grid-x' : 'Row'
-    'grid-y' : 'Column'
 
 
 DNADesign\ElementalList\Model\ElementList:
   extensions:
     - thezenmonkey\foundational\Extensions\FoundationalElementList
+
+Foundational:
+  UseXLarge: false
+  UseXXLarge: false
+  GridDirections:
+    'grid-x' : 'Row'
+    'grid-y' : 'Column'
+  GridSize: 12
+  CustomGrid: false
+  CellClass: 'cell'

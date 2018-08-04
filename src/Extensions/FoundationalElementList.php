@@ -48,7 +48,7 @@ class FoundationalElementList extends DataExtension
         $fields->removeByName('XLarge');
         $fields->removeByName('XXLarge');
 
-        $directions = $this->owner->config()->get('GridDirections');
+        $directions = Config::inst()->get('Foundational','GridDirections');
 
 
         $fields->push(DropdownField::create('GridDirection', 'Direction', $directions));
@@ -63,18 +63,17 @@ for details'
 
         $blockGrid = CompositeField::create();
 
-        $blockGrid->push(NumericField::create('Width At Small Screen Sizes')
-                                     ->setHTML5(true)
-                                     ->setAttribute('max', 12));
-        $blockGrid->push(NumericField::create('Medium', 'Width At Medium Screen Sizes')->setHTML5(true)->setAttribute('max', 12));
-        $blockGrid->push(NumericField::create('Large', 'Width At Large Screen Sizes')->setHTML5(true)->setAttribute('max', 12));
+        $blockGrid->push(DropdownField::create('Small', 'At Small Screen Sizes', self::generateSizeArray('small'))->setEmptyString('Choose a Block Count'));
+        $blockGrid->push(DropdownField::create('Medium', 'At Medium Screen Sizes', self::generateSizeArray('medium'))->setEmptyString('Choose a Block Count'));
+        $blockGrid->push(DropdownField::create('Large', 'At Large Screen Sizes', self::generateSizeArray('large'))->setEmptyString('Choose a Block Count'));
 
-        if(Config::inst()->get('BaseElement', 'UseXlarge')) {
-            $blockGrid->push(NumericField::create('XLarge', 'Width At X-Large Screen Sizes')->setHTML5(true)->setAttribute('max', 12));
+
+        if(Config::inst()->get('Foundational', 'UseXlarge')) {
+            $blockGrid->push(DropdownField::create('XLarge', 'At X-Large Screen Sizes', self::generateSizeArray('xlarge'))->setEmptyString('Choose a Block Count'));
         }
 
-        if(Config::inst()->get('BaseElement', 'UseXXlarge')) {
-            $blockGrid->push(NumericField::create('XXLarge', 'Width At XX-Large Screen Sizes')->setHTML5(true)->setAttribute('max', 12));
+        if(Config::inst()->get('Foundational', 'UseXXlarge')) {
+            $blockGrid->push(DropdownField::create('XXLarge', 'At XX-Large Screen Sizes', self::generateSizeArray('xxlarge'))->setEmptyString('Choose a Block Count'));
         }
 
         $blockGridSizes = Wrapper::create($blockGrid);
@@ -83,9 +82,30 @@ for details'
 
         $fields->push( $blockGridSizes );
 
+    }
 
+    public function generateSizeArray($size) {
+
+        $i = 1;
+
+        while($i <= 8) {
+
+            $sizeArray[$size.'-'.$i.'-up'] = $i . (($i > 1) ? ' Units' : ' Unit');
+            $i++;
+        }
+
+        return $sizeArray;
     }
 
 
+    public function getBlockGridClasses() {
 
+        $style = '';
+        $style .= ' ' . $this->owner->Small;
+        $style .= ' ' . $this->owner->Medium;
+        $style .= ' ' . $this->owner->Large;
+        $style .= ' ' . $this->owner->XLarge;
+        $style .= ' ' . $this->owner->XXLarge;
+        return $style;
+    }
 }
