@@ -2,36 +2,33 @@
 
 namespace thezenmonkey\foundational\Extensions;
 
+use SilverStripe\Control\Controller;
 use SilverStripe\Core\Config\Config;
 use SilverStripe\Forms\DropdownField;
 use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\TextField;
 use SilverStripe\ORM\DataExtension;
 use SilverStripe\Forms\CompositeField;
-use SilverStripe\Forms\NumericField;
 use SilverStripe\Forms\TabSet;
 use SilverStripe\Forms\Tab;
 
 class FoundationalBaseElement extends DataExtension {
     private static $db = [
-        'Small' => 'Varchar(255)',
-        'Medium' => 'Varchar(255)',
-        'Large' => 'Varchar(255)',
-        'XLarge' => 'Varchar(255)',
-        'XXLarge' => 'Varchar(255)',
         'StickyProperties' => 'Varchar(255)',
         'ContainerProperties' => 'Varchar(255)',
         'ElementProperties' => 'Varchar(255)',
-
+        'FoundationalClasses' => 'MultiValueField',
+        'FoundationalElementClasses' => 'MultiValueField'
     ];
+
+    private static $foundationClasses;
+    private static $foundationElementClasses;
+
 
     public function updateCMSFields(FieldList $fields)
     {
-        $fields->removeByName('Small');
-        $fields->removeByName('Medium');
-        $fields->removeByName('Large');
-        $fields->removeByName('XLarge');
-        $fields->removeByName('XXLarge');
+        $fields->removeByName('FoundationalClasses');
+        $fields->removeByName('FoundationalElementClasses');
 
         $fields->addFieldToTab(
             'Root.Settings',
@@ -45,18 +42,53 @@ class FoundationalBaseElement extends DataExtension {
 
         $cellSize = CompositeField::create();
 
-        $cellSize->push(DropdownField::create('Small', 'At Small Screen Sizes', self::getSizeArray('small'))->setEmptyString('Choose a Size'));
-        $cellSize->push(DropdownField::create('Medium', 'At Medium Screen Sizes', self::getSizeArray('medium'))->setEmptyString('Choose a Size'));
-        $cellSize->push(DropdownField::create('Large', 'At Large Screen Sizes', self::getSizeArray('large'))->setEmptyString('Choose a Size'));
+
+        $cellSize->push(
+            DropdownField::create(
+                'FoundationalClasses[small]',
+                'At Small Screen Sizes',
+                self::getSizeArray('small'),
+                $this->owner->getFoundationalValue('small')
+            )->setEmptyString('Choose a Size')
+        );
+        $cellSize->push(
+            DropdownField::create(
+                'FoundationalClasses[medium]',
+                'At Medium Screen Sizes',
+                self::getSizeArray('medium'),
+                $this->owner->getFoundationalValue('medium')
+            )->setEmptyString('Choose a Size')
+        );
+        $cellSize->push(
+            DropdownField::create(
+                'FoundationalClasses[large]',
+                'At Large Screen Sizes',
+                self::getSizeArray('large'),
+                $this->owner->getFoundationalValue('large')
+            )->setEmptyString('Choose a Size'));
 
         if(Config::inst()->get('Foundational', 'UseXLarge')) {
-            $cellSize->push(DropdownField::create('XLarge', 'At X-Large Screen Sizes', self::getSizeArray('xlarge'))->setEmptyString('Choose a Size'));
+            $cellSize->push(
+                DropdownField::create(
+                    'FoundationalClasses[xlarge]',
+                    'At X-Large Screen Sizes',
+                    self::getSizeArray('xlarge'),
+                    $this->owner->getFoundationalValue('xlarge')
+                )->setEmptyString('Choose a Size')
+            );
         }
 
         if(Config::inst()->get('Foundational', 'UseXXlarge')) {
-            $cellSize->push(DropdownField::create('XXLarge', 'At XX-Large Screen Sizes', self::getSizeArray('xxlarge'))->setEmptyString('Choose a Size'));
+            $cellSize->push(
+                DropdownField::create(
+                    'FoundationalClasses[xxlarge]',
+                    'At XX-Large Screen Sizes',
+                    self::getSizeArray('xxlarge'),
+                    $this->owner->getFoundationalValue('xxlarge')
+                )->setEmptyString('Choose a Size')
+            );
         }
-        
+
         $foundationOptions->push($cellSize);
 
         $advancedOptions->push(TextField::create('ContainerProperties',"Extra Properties for Container"));
@@ -66,7 +98,9 @@ class FoundationalBaseElement extends DataExtension {
 
             $fields->addFieldToTab(
                 'Root.Settings.ElementalOptions.Advanced',
-                TextField::create('StickyProperties')->setDescription('Please refer to <a href="https://foundation.zurb.com/sites/docs/sticky.html" target="_blank">Foundation Docs</a> for information.')
+                TextField::create(
+                    'StickyProperties'
+                )->setDescription('Please refer to <a href="https://foundation.zurb.com/sites/docs/sticky.html" target="_blank">Foundation Docs</a> for information.')
             );
         }
 
@@ -78,6 +112,18 @@ class FoundationalBaseElement extends DataExtension {
         parent::updateCMSFields($fields); // TODO: Change the autogenerated stub
     }
 
+    public function getThemeOptions() {
+
+    }
+
+    /**
+     * Get Size Array for Foundation Dropdowns. If no CustomGrid is defined it will generate one Bases on
+     * configured GridSize
+     *
+     * @param $size
+     *
+     * @return array
+     */
     public function getSizeArray($size) {
         if($customGrid = Config::inst()->get('Foundational', 'CustomGrid')) {
 
@@ -91,47 +137,199 @@ class FoundationalBaseElement extends DataExtension {
         }
     }
 
+    /**
+     * Create a default size array for Foundation Dropdowns based on GridSize confuration
+     *
+     * @param $size size for the grid can configured in
+     *
+     * @return array
+     */
     public function generateSizeArray($size) {
         $gridSize = Config::inst()->get('Foundational', 'GridSize');
 
-        $sizeArray = ['auto' => 'Auto'];
+        if($size !== 'small') {
+            $sizeArray = [$size.'-auto' => 'Auto'];
+        } else {
+            $sizeArray = ['auto' => 'Auto'];
+        }
+
         $i = 1;
 
         while($i <= $gridSize) {
 
-            $sizeArray[$size.'-'.$i] = $i . (($i > 1) ? ' Units' : ' Unit');
+            $sizeArray[$size.'-'.$i] = $i . '/' . $gridSize . ' Units';
             $i++;
         }
 
         return $sizeArray;
     }
 
-    public function getHolderClasses() {
 
-        $style = '';
+    /**
+     * Get Foundation Classes from MultiValueField
+     * @return string
+     */
+    public function getFoundation() {
+        $classes = '';
 
         if($this->owner->ClassName !== 'DNADesign\ElementalList\Model\ElementList') {
-
-            $style .= ' ' . Config::inst()->get('Foundational', 'CellClass');
-            $style .= ' ' . (string) $this->owner->Small;
-            $style .= ' ' . (string) $this->owner->Medium;
-            $style .= ' ' . (string) $this->owner->Large;
-            $style .= ' ' . (string) $this->owner->XLarge;
-            $style .= ' ' . (string) $this->owner->XXLarge;
+            $classes .= ' ' . Config::inst()->get('Foundational', 'CellClass');
         }
-        $style = implode( " ", $this->owner->extend('updateHolderClasses', $style) );
 
-        return $style;
-    }
+        $foundationalClasses = $this->owner->obj('FoundationalClasses')->getValue();
 
 
-    public function getThemeClasses() {
-        $classes = null;
+        if($foundationalClasses) {
 
-        $classes = $this->owner->extend('updateThemeClasses', $classes);
+            foreach ($foundationalClasses as $k => $v) {
+                $classes .= ' ' . $v;
+            }
+
+        }
 
         return $classes;
     }
+
+    public function getElementClasses() {
+        $classes = '';
+
+        $elementClasses = $this->owner->obj('FoundationalElementClasses')->getValue();
+
+        if($elementClasses) {
+
+            foreach ($elementClasses as $k => $v) {
+
+                if( is_array($v) ) {
+
+                    $classes .= ' ' . implode(' ', $v);
+
+                } else {
+                    $classes .= ' ' . $v;
+                }
+
+
+            }
+
+        }
+
+        return $classes;
+
+    }
+
+
+    public function getFoundationalValue($key)  {
+        if( ($values = $this->owner->obj('FoundationalClasses')->getValues() ) && key_exists($key, $values)) {
+            return $values[$key];
+        } else {
+            return '';
+        }
+    }
+
+    public function getFoundationalElementValue($key)  {
+        if( ($values = $this->owner->obj('FoundationalElementClasses')->getValues() ) && key_exists($key, $values)) {
+            return $values[$key];
+        } else {
+            return '';
+        }
+    }
+
+
+
+    public function getFoundationClasses() {
+        if(!self::$foundationClasses) {
+            self::setFoundationClasses();
+        }
+
+        return self::$foundationClasses;
+    }
+
+    public function setFoundationClasses($value = null) {
+        if($value) {
+            self::$foundationClasses = $value;
+        } else {
+            self::$foundationClasses = Controller::curr()->getRequest()->postVars()['FoundationalClasses'];
+        }
+    }
+
+    public function getFoundationElementClasses() {
+        if(!self::$foundationElementClasses) {
+            self::setFoundationElementClasses();
+        }
+
+        return self::$foundationElementClasses;
+    }
+
+    public function setFoundationElementClasses($value = null) {
+
+        if($value) {
+            self::$foundationElementClasses = $value;
+        } else {
+            self::$foundationElementClasses = Controller::curr()->getRequest()->postVars()['FoundationalElementClasses'];
+        }
+    }
+
+    public function onBeforeWrite()
+    {
+
+
+        $postVars = Controller::curr()->getRequest()->postVars();
+
+        $foundationClasses = ( key_exists('FoundationalClasses', $postVars) )
+            ? $postVars['FoundationalClasses']
+            : '';
+        $foundationElementClasses = ( key_exists('FoundationalElementClasses', $postVars) )
+            ? $postVars['FoundationalElementClasses']
+            : '';
+
+        if( is_array($foundationClasses) ) {
+            $this->owner->FoundationalClasses = $this->owner->cleanFoundationalArray($foundationClasses);
+        }
+
+        if( is_array($foundationElementClasses) ) {
+            // set full class to full
+            if( key_exists('full', $foundationElementClasses) ) {
+                $foundationElementClasses['full'] = 'full';
+            }
+
+            // set alignment to align-center-middle or add horizontal/verrtical alignment classes
+            if( key_exists('align-center-middle', $foundationElementClasses) ) {
+                $foundationElementClasses['alignment'] = 'align-center-middle';
+                unset($foundationElementClasses['align-vertical']);
+                unset($foundationElementClasses['align-horizontal']);
+                unset($foundationElementClasses['align-center-middle']);
+            }
+            // set blockgrid classes
+            if(isset($foundationElementClasses['blockgrid']['active'])) {
+                unset($foundationElementClasses['blockgrid']['active']);
+            } else {
+                unset($foundationElementClasses['blockgrid']['small']);
+                unset($foundationElementClasses['blockgrid']['medium']);
+                unset($foundationElementClasses['blockgrid']['large']);
+                unset($foundationElementClasses['blockgrid']['xlarge']);
+                unset($foundationElementClasses['blockgrid']['xxlarge']);
+            }
+
+            $this->owner->FoundationalElementClasses = $this->owner->cleanFoundationalArray($foundationElementClasses);
+        }
+
+
+        parent::onBeforeWrite(); // TODO: Change the autogenerated stub
+    }
+
+    public function cleanFoundationalArray($array) {
+        foreach ($array as $key => $value) {
+            if (is_array($value)) {
+                $array[$key] = $this->owner->cleanFoundationalArray($array[$key]);
+            }
+
+            if (empty($array[$key])) {
+                unset($array[$key]);
+            }
+        }
+
+        return $array;
+    }
+
 
 
 }
