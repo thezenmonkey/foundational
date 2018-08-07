@@ -1,4 +1,7 @@
 # Foundational
+
+**WARNING** API is under heavy development and will likely change.
+
 This module assigns base Foundation parameters to SilverStripe Elemental. It lets teh use lay out pages using the default XY Grid.
 
 ## Requirements
