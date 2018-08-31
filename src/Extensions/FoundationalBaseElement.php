@@ -78,7 +78,7 @@ class FoundationalBaseElement extends DataExtension {
             );
         }
 
-        if(Config::inst()->get('Foundational', 'UseXXlarge')) {
+        if(Config::inst()->get('Foundational', 'UseXXLarge')) {
             $cellSize->push(
                 DropdownField::create(
                     'FoundationalClasses[xxlarge]',
@@ -218,19 +218,56 @@ class FoundationalBaseElement extends DataExtension {
 
 
     public function getFoundationalValue($key)  {
-        if( ($values = $this->owner->obj('FoundationalClasses')->getValues() ) && key_exists($key, $values)) {
-            return $values[$key];
+
+        if(is_array($key)) {
+            foreach ($key as $k => $v) {
+                if( ($values = $this->owner->obj('FoundationalClasses')->getValues() ) && key_exists($k, $values)) {
+                    if(key_exists($v, $values[$k])) {
+                        return $values[$k][$v];
+                    } else {
+                        return '';
+                    }
+
+                } else {
+                    return '';
+                }
+            }
+
         } else {
-            return '';
+            if( ($values = $this->owner->obj('FoundationalClasses')->getValues() ) && key_exists($key, $values)) {
+                return $values[$key];
+            } else {
+                return '';
+            }
         }
+
+
     }
 
     public function getFoundationalElementValue($key)  {
-        if( ($values = $this->owner->obj('FoundationalElementClasses')->getValues() ) && key_exists($key, $values)) {
-            return $values[$key];
+
+        if(is_array($key)) {
+            foreach ($key as $k => $v) {
+                if( ($values = $this->owner->obj('FoundationalElementClasses')->getValues() ) && key_exists($k, $values)) {
+                    if(key_exists($v, $values[$k])) {
+                        return $values[$k][$v];
+                    } else {
+                        return '';
+                    }
+
+                } else {
+                    return '';
+                }
+            }
         } else {
-            return '';
+            if( ($values = $this->owner->obj('FoundationalElementClasses')->getValues() ) && key_exists($key, $values)) {
+                return $values[$key];
+            } else {
+                return '';
+            }
         }
+
+
     }
 
 

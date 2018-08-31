@@ -20,9 +20,11 @@ use SilverStripe\Forms\CheckboxField;
 use SilverStripe\Forms\CompositeField;
 use SilverStripe\Forms\DropdownField;
 use UncleCheese\DisplayLogic\Forms\Wrapper;
+use SilverStripe\Core\Config\Configurable;
 
 class FoundationalElementList extends DataExtension
 {
+    use Configurable;
 
     private static $db = [
 //        'GridDirection' => 'Varchar',
@@ -53,18 +55,7 @@ class FoundationalElementList extends DataExtension
         $fields->removeByName('FoundationalClasses[xxlarge]');
 
 
-//        $foundationalElementClasses = $this->owner->obj('FoundationalElementClasses')->getValue();
-//
-//        $direction = ($foundationalElementClasses && key_exists('direction', $foundationalElementClasses)) ? $foundationalElementClasses['direction'] : '';
-//
-//        $blockGrid = ($foundationalElementClasses && key_exists('blockgrid', $foundationalElementClasses)) ? 1 : 0;
-//        $smallSize = ($foundationalElementClasses && key_exists('small', $foundationalElementClasses)) ? $foundationalElementClasses['small'] : '';
-//        $mediumSize = ($foundationalElementClasses && key_exists('medium', $foundationalElementClasses)) ? $foundationalElementClasses['medium'] : '';
-//        $largeSize = ($foundationalElementClasses && key_exists('large', $foundationalElementClasses)) ? $foundationalElementClasses['large'] : '';
-//        $xlargeSize = ($foundationalElementClasses && key_exists('xlarge', $foundationalElementClasses)) ? $foundationalElementClasses['xlarge'] : '';
-//        $xxlargeSize = ($foundationalElementClasses && key_exists('xxlarge', $foundationalElementClasses)) ? $foundationalElementClasses['xxlarge'] : '';
-//        //$alignCenterMiddle = ($foundationalElementClasses && key_exists('alignment', $foundationalElementClasses) && !is_array($foundationalElementClasses['alignment'])) ? 1 : 0;
-//
+
         if($value = $this->owner->getFoundationalElementValue('alignment')) {
 
             if( is_array($value) ) {
@@ -154,37 +145,37 @@ class FoundationalElementList extends DataExtension
             'FoundationalElementClasses[blockgrid][small]',
             'At Small Screen Sizes',
             self::generateSizeArray('small'),
-            $this->owner->getFoundationalElementValue('small'))->setEmptyString('Choose a Block Count')
+            $this->owner->getFoundationalElementValue(array('blockgrid' => 'small')))->setEmptyString('Choose a Block Count')
         );
         $blockGrid->push(DropdownField::create(
             'FoundationalElementClasses[blockgrid][medium]',
             'At Medium Screen Sizes',
             self::generateSizeArray('medium'),
-            $this->owner->getFoundationalElementValue('medium'))->setEmptyString('Choose a Block Count')
+            $this->owner->getFoundationalElementValue(array('blockgrid' => 'medium')))->setEmptyString('Choose a Block Count')
         );
         $blockGrid->push(DropdownField::create(
             'FoundationalElementClasses[blockgrid][large]',
             'At Large Screen Sizes',
             self::generateSizeArray('large'),
-            $this->owner->getFoundationalElementValue('large'))->setEmptyString('Choose a Block Count')
+            $this->owner->getFoundationalElementValue(array('blockgrid' => 'large')))->setEmptyString('Choose a Block Count')
         );
 
 
-        if(Config::inst()->get('Foundational', 'UseXlarge')) {
+        if(Config::inst()->get('Foundational', 'UseXLarge')) {
             $blockGrid->push(DropdownField::create(
-                'FoundationalElementClasses[blockgrid][large]',
+                'FoundationalElementClasses[blockgrid][xlarge]',
                 'At X-Large Screen Sizes',
                 self::generateSizeArray('xlarge'),
-                $this->owner->getFoundationalElementValue('xlarge'))->setEmptyString('Choose a Block Count')
+                $this->owner->getFoundationalElementValue(array('blockgrid' => 'xlarge')))->setEmptyString('Choose a Block Count')
             );
         }
 
-        if(Config::inst()->get('Foundational', 'UseXXlarge')) {
+        if(Config::inst()->get('Foundational', 'UseXXLarge')) {
             $blockGrid->push(DropdownField::create(
                 'FoundationalElementClasses[blockgrid][xxlarge]',
                 'At XX-Large Screen Sizes',
                 self::generateSizeArray('xxlarge'),
-                $this->owner->getFoundationalElementValue('xxlarge') )->setEmptyString('Choose a Block Count')
+                $this->owner->getFoundationalElementValue(array('blockgrid' => 'xxlarge')) )->setEmptyString('Choose a Block Count')
             );
         }
 
@@ -202,7 +193,7 @@ class FoundationalElementList extends DataExtension
 
         while($i <= 8) {
 
-            $sizeArray[$size.'-'.$i.'-up'] = $i . (($i > 1) ? ' Units Across' : ' Unit Across');
+            $sizeArray[$size.'-up-'.$i] = $i . (($i > 1) ? ' Units Across' : ' Unit Across');
             $i++;
         }
 
