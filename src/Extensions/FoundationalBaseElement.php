@@ -221,7 +221,7 @@ class FoundationalBaseElement extends DataExtension {
         if( ($values = $this->owner->obj('FoundationalClasses')->getValues() ) && key_exists($key, $values)) {
             return $values[$key];
         } else {
-            return '';
+            return [];
         }
     }
 
@@ -229,7 +229,7 @@ class FoundationalBaseElement extends DataExtension {
         if( ($values = $this->owner->obj('FoundationalElementClasses')->getValues() ) && key_exists($key, $values)) {
             return $values[$key];
         } else {
-            return '';
+            return [];
         }
     }
 
