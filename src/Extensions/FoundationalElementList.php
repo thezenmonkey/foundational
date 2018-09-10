@@ -145,19 +145,19 @@ class FoundationalElementList extends DataExtension
             'FoundationalElementClasses[blockgrid][small]',
             'At Small Screen Sizes',
             self::generateSizeArray('small'),
-            $this->owner->getFoundationalElementValue(array('blockgrid' => 'small')))->setEmptyString('Choose a Block Count')
+            $this->owner->getFoundationalElementValue('small'))->setEmptyString('Choose a Block Count')
         );
         $blockGrid->push(DropdownField::create(
             'FoundationalElementClasses[blockgrid][medium]',
             'At Medium Screen Sizes',
             self::generateSizeArray('medium'),
-            $this->owner->getFoundationalElementValue(array('blockgrid' => 'medium')))->setEmptyString('Choose a Block Count')
+            $this->owner->getFoundationalElementValue('medium'))->setEmptyString('Choose a Block Count')
         );
         $blockGrid->push(DropdownField::create(
             'FoundationalElementClasses[blockgrid][large]',
             'At Large Screen Sizes',
             self::generateSizeArray('large'),
-            $this->owner->getFoundationalElementValue(array('blockgrid' => 'large')))->setEmptyString('Choose a Block Count')
+            $this->owner->getFoundationalElementValue('large'))->setEmptyString('Choose a Block Count')
         );
 
 
@@ -166,7 +166,7 @@ class FoundationalElementList extends DataExtension
                 'FoundationalElementClasses[blockgrid][xlarge]',
                 'At X-Large Screen Sizes',
                 self::generateSizeArray('xlarge'),
-                $this->owner->getFoundationalElementValue(array('blockgrid' => 'xlarge')))->setEmptyString('Choose a Block Count')
+                $this->owner->getFoundationalElementValue('xlarge'))->setEmptyString('Choose a Block Count')
             );
         }
 
@@ -175,7 +175,7 @@ class FoundationalElementList extends DataExtension
                 'FoundationalElementClasses[blockgrid][xxlarge]',
                 'At XX-Large Screen Sizes',
                 self::generateSizeArray('xxlarge'),
-                $this->owner->getFoundationalElementValue(array('blockgrid' => 'xxlarge')) )->setEmptyString('Choose a Block Count')
+                $this->owner->getFoundationalElementValue('xxlarge') )->setEmptyString('Choose a Block Count')
             );
         }
 
