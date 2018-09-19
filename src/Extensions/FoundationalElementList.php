@@ -59,8 +59,8 @@ class FoundationalElementList extends DataExtension
         if($value = $this->owner->getFoundationalElementValue('alignment')) {
 
             if( is_array($value) ) {
-                $alignVertical = ( key_exists( 'vertical', $value ) ) ? $value['vertical'] : '';
-                $alignHorizontal = ( key_exists( 'horizontal', $value ) ) ? $value['horizontal'] : '';
+                $alignVertical = ( key_exists( 'vertical', $value ) ) ? $value['align-vertical'] : '';
+                $alignHorizontal = ( key_exists( 'horizontal', $value ) ) ? $value['align-horizontal'] : '';
                 $alignCenterMiddle = 0;
             } else {
                 $alignCenterMiddle = 1;
