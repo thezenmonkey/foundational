@@ -125,6 +125,7 @@ class FoundationalElementList extends DataExtension
 
 
         $vertField->hideIf('FoundationalElementClasses[align-center-middle]')->isChecked();
+        $horField->hideIf('FoundationalElementClasses[align-center-middle]')->isChecked();
 
 
 
@@ -141,23 +142,30 @@ class FoundationalElementList extends DataExtension
 
         $blockGrid = CompositeField::create();
 
+        $blockGridValue = $this->owner->getFoundationalElementValue('blockgrid');
+        $blockGridSmall = key_exists('small', $blockGridValue) ? $blockGridValue['small'] : '';
+        $blockGridMedium = key_exists('medium', $blockGridValue) ? $blockGridValue['medium'] : '';
+        $blockGridLarge = key_exists('large', $blockGridValue) ? $blockGridValue['large'] : '';
+        $blockGridXLarge = key_exists('xlarge', $blockGridValue) ? $blockGridValue['xlarge'] : '';
+        $blockGridXXLarge = key_exists('xxlarge', $blockGridValue) ? $blockGridValue['xxlarge'] : '';
+
         $blockGrid->push(DropdownField::create(
             'FoundationalElementClasses[blockgrid][small]',
             'At Small Screen Sizes',
             self::generateSizeArray('small'),
-            $this->owner->getFoundationalElementValue('small'))->setEmptyString('Choose a Block Count')
+            $blockGridSmall)->setEmptyString('Choose a Block Count')
         );
         $blockGrid->push(DropdownField::create(
             'FoundationalElementClasses[blockgrid][medium]',
             'At Medium Screen Sizes',
             self::generateSizeArray('medium'),
-            $this->owner->getFoundationalElementValue('medium'))->setEmptyString('Choose a Block Count')
+            $blockGridMedium)->setEmptyString('Choose a Block Count')
         );
         $blockGrid->push(DropdownField::create(
             'FoundationalElementClasses[blockgrid][large]',
             'At Large Screen Sizes',
             self::generateSizeArray('large'),
-            $this->owner->getFoundationalElementValue('large'))->setEmptyString('Choose a Block Count')
+            $blockGridLarge)->setEmptyString('Choose a Block Count')
         );
 
 
@@ -166,7 +174,7 @@ class FoundationalElementList extends DataExtension
                 'FoundationalElementClasses[blockgrid][xlarge]',
                 'At X-Large Screen Sizes',
                 self::generateSizeArray('xlarge'),
-                $this->owner->getFoundationalElementValue('xlarge'))->setEmptyString('Choose a Block Count')
+                $blockGridXLarge)->setEmptyString('Choose a Block Count')
             );
         }
 
@@ -175,7 +183,7 @@ class FoundationalElementList extends DataExtension
                 'FoundationalElementClasses[blockgrid][xxlarge]',
                 'At XX-Large Screen Sizes',
                 self::generateSizeArray('xxlarge'),
-                $this->owner->getFoundationalElementValue('xxlarge') )->setEmptyString('Choose a Block Count')
+                $blockGridXXLarge )->setEmptyString('Choose a Block Count')
             );
         }
 
